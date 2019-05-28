@@ -1,6 +1,6 @@
-## Sequelize Transacrtion POC
+# Sequelize Transaction POC
  
- # How to start application
+## How to start application
 
  ```
   npm install
@@ -9,14 +9,16 @@
   npm start
  ```
 
- # Run test
+## Run test
+
 ```
   NODE_ENV=test npx sequelize db:migrate
   NODE_ENV=test npx sequelize db:seed:all
   npm test
 ```
 
-# Quick Guide:
+## Quick Guide:
+
 Undo migration
 ```
   npx sequelize db:migrate:undo:all
