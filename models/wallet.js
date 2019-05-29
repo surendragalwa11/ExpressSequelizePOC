@@ -31,13 +31,13 @@ module.exports = (sequelize, DataTypes) => {
   Wallet.purchaseAsset = (user_id, amount) => {
     let resp = {};
     let updated_balance;
-    return sequelize.transaction().then(t => {
+    return sequelize.transaction(t => {
       return Wallet.findOne({
         where: { user_id: user_id}, transaction: t, lock: true
       }).then(wallet => {
         if(!wallet) { throw "no wallet for this user"; }
         if(wallet.balance < amount) {
-           throw "insufficient funds";
+          throw "insufficient funds";
         }
         wallet.balance = wallet.balance - amount;
         return wallet.save({transaction: t});
@@ -45,10 +45,11 @@ module.exports = (sequelize, DataTypes) => {
         updated_balance = updatedWallet.balance
         return sequelize.models.Transaction.create({
           user_id: user_id,
-          amount: amount
+          amount: amount,
         }, {transaction: t});
-      }).then(newTransaction => {
-        t.commit();
+      });
+    }).then(newTransaction => {
+       // t.commit();
         resp = {
           Response: 200,
           data: {
@@ -58,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
         };
         return resp;
       }).catch((err) => {
-        t.rollback();
+       // t.rollback();
         resp = {
           Response: 400,
           data:{},
@@ -66,7 +67,6 @@ module.exports = (sequelize, DataTypes) => {
         };
         return resp
       });
-    });
   }
 
   return Wallet;
