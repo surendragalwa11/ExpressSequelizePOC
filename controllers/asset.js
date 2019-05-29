@@ -6,16 +6,13 @@ module .exports = {
     resp = models.Wallet.deductBalance(user_id, amount)
       .then((updatedbalance)=>{
         updatedBalance = updatedbalance
-        return models.Transaction.create({
-          user_id: user_id,
-          amount: amount
-        });
-      }).then((transaction)=> {
+        return models.Transaction.createTransaction(user_id,amount);
+      }).then((transaction_id)=> {
         return ({
           Response: 200,
           data: {
             wallet_balance: updatedBalance,
-            transaction_id: transaction.transaction_id
+            transaction_id: transaction_id
           }
         })
       })
