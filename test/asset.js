@@ -33,7 +33,7 @@ describe('purchase route',()=>{
           amount: 1100,
         })
         .end(async (err, res) => {
-          expect(res.status).to.equal(400)
+          expect(res.status).to.equal(401)
           expect(res.body.error).to.equal('insufficient funds')
         });
   });
