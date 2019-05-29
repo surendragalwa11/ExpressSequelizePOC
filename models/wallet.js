@@ -28,9 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     })
   };
 
-  Wallet.purchaseAsset = (user_id, amount) => {
-    let resp = {};
-    let updated_balance;
+  Wallet.deductBalance = (user_id, amount) => {
     return sequelize.transaction(t => {
       return Wallet.findOne({
         where: { user_id: user_id}, transaction: t, lock: true
@@ -41,32 +39,16 @@ module.exports = (sequelize, DataTypes) => {
         }
         wallet.balance = wallet.balance - amount;
         return wallet.save({transaction: t});
-      }).then((updatedWallet) => {
-        updated_balance = updatedWallet.balance
-        return sequelize.models.Transaction.create({
-          user_id: user_id,
-          amount: amount,
-        }, {transaction: t});
       });
-    }).then(newTransaction => {
-       // t.commit();
-        resp = {
-          Response: 200,
-          data: {
-            wallet_balance: updated_balance,
-            transaction_id: newTransaction.transaction_id
-          }
-        };
-        return resp;
-      }).catch((err) => {
-       // t.rollback();
-        resp = {
-          Response: 400,
-          data:{},
-          error: err,
-        };
-        return resp
-      });
+    }).then(wallet => {
+        return new Promise((resolve)=> {
+          resolve(wallet.balance);
+        });
+    }).catch((err) => {
+        return new Promise((resolve, reject) => {
+          reject(err);
+        });
+    });
   }
 
   return Wallet;
